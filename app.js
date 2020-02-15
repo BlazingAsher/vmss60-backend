@@ -5,6 +5,7 @@ var logger = require('morgan');
 var jwt = require('express-jwt');
 var jwks = require('jwks-rsa');
 var dotenv = require('dotenv');
+const mongoose = require('mongoose');
 dotenv.config();
 
 var indexRouter = require('./routes/index');
@@ -22,6 +23,10 @@ var jwtCheck = jwt({
     audience: 'https://api.vmss60.com',
     issuer: 'https://vmss60.auth0.com/',
     algorithms: ['RS256']
+});
+
+mongoose.connect(process.env.DB || 'mongodb://localhost:27017/vmss60-backend').catch(error => {
+    console.log(error)
 });
 
 app.use(jwtCheck);

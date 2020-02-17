@@ -16,6 +16,9 @@ var schema = new mongoose.Schema({
     price: {
         type: Number,
         required: true
+    },
+    additional: {
+        type: mongoose.Mixed
     }
 
 });

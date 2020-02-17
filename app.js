@@ -25,7 +25,10 @@ var jwtCheck = jwt({
     algorithms: ['RS256']
 });
 
-mongoose.connect(process.env.DB || 'mongodb://localhost:27017/vmss60-backend').catch(error => {
+mongoose.connect(process.env.DB || 'mongodb://localhost:27017/vmss60-backend', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}).catch(error => {
     console.log(error)
 });
 

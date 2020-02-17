@@ -29,18 +29,19 @@ router.get('/provisionUser', function(req, res, next) {
 
 router.post('/createCheckoutSession', async function(req, res, next) {
     // console.log(req.body);
-    const orders = JSON.parse(req.body.data.cart);
+    const orders = req.body.data.cart;
     // console.log(orders)
     let line_items = [];
     for (let order in orders) {
         // console.log(order)
+        const item = await Item.findById(order);
         line_items.push({
-            name: orders[order].name,
-            description: orders[order].description,
-            images: [orders[order].image],
-            amount: orders[order].price * 100,
+            name: item.name,
+            description: item.description,
+            images: [item.image],
+            amount: item.price * 100,
             currency: 'cad',
-            quantity: 1
+            quantity: orders[order]
         })
     }
     const session = await stripe.checkout.sessions.create({

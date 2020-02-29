@@ -1,14 +1,15 @@
 const Ticket = require('../models/Ticket');
+const Order = require('../models/Order');
+
 
 class TicketController {
     static async saveTicket(ticketId, metadata) {
         const count = await Ticket.countDocuments({_id: ticketId}).exec();
         if (count > 0) {
             try {
-                await Ticket.updateOne({_id: ticketId}, metadata);
-                return new Promise(resolve => resolve)
+                await Ticket.updateOne({_id: ticketId}, {"$set": {"metadata": metadata}});
             } catch (e) {
-                return new Promise((resolve, reject) => reject(e))
+                return e
             }
         } else {
             return new Promise((resolve, reject) => {
@@ -16,22 +17,22 @@ class TicketController {
             })
         }
     }
-    static async createTicket(userID, orderID, metadata) {
+    static async createTicket(userID, orderID, itemID, metadata) {
         const count = await Ticket.countDocuments({metadata: metadata}).exec();
         if (count === 0) {
             try {
-                await Ticket.create({
-                    type: '',
+                return await Ticket.create({
+                    type: 'event',
                     userID: userID,
                     orderID: orderID,
+                    itemID: itemID,
                     metadata: metadata
-                });
-                return new Promise(resolve => resolve)
+                })
             } catch (e) {
-                return new Promise((resolve, reject) => reject(e))
+                return new Error(e)
             }
         } else {
-            return new Promise((resolve, reject) => reject(new Error('Ticket already exists')))
+            return new Error('Ticket already exists')
         }
     }
 }

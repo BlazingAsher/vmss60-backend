@@ -10,6 +10,7 @@ dotenv.config();
 
 var indexRouter = require('./routes/index');
 var userRouter = require('./routes/user');
+const ticketRouter = require('./routes/ticket');
 
 var app = express();
 var cors = require('cors');
@@ -44,7 +45,7 @@ function unless(paths, middleware){
     };
 }
 
-app.use(unless(['/provisionUser'],jwtCheck));
+app.use(unless(['/provisionUser', '/fulfillPurchase'],jwtCheck));
 
 app.use(cors());
 app.use(logger('dev'));
@@ -55,6 +56,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/user/', userRouter);
+app.use('/ticket/', ticketRouter);
 
 module.exports = app;
 

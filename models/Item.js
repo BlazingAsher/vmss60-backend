@@ -17,6 +17,11 @@ var schema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    type: {
+        type: String,
+        enum: ['ticket', 'clothing', 'generic'],
+        default: 'generic'
+    },
     additional: {
         type: mongoose.Mixed
     }

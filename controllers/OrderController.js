@@ -34,9 +34,9 @@ class OrderController {
         //     return callback(null, {"status": true})
         // })
         try {
-            let result = await Order.create(order).exec();
+            let result = await Order.create(order);
             return new Promise((resolve, reject) => {
-                resolve({"status": true})
+                resolve(result)
             })
         } catch (e) {
             return new Promise((resolve, reject) => {
@@ -44,6 +44,10 @@ class OrderController {
             })
         }
     };
+
+    static async markAsFulfilled(transID) {
+        await Order.updateMany({"transID": transID}, {"$set":{"fulfilled": true}}).exec();
+    }
 }
 
 

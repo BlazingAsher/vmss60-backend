@@ -3,6 +3,9 @@ var dotenv = require('dotenv');
 var router = express.Router();
 const Item = require('../models/Item');
 const User = require('../models/User');
+const OrderController = require('../controllers/OrderController');
+const TicketController = require('../controllers/TicketController');
+const { v4: uuidv4 } = require('uuid');
 dotenv.config();
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
@@ -38,7 +41,7 @@ router.post('/provisionUser', function(req, res, next) {
 
 router.post('/createCheckoutSession', async function(req, res, next) {
     const orders = req.body.data.cart;
-    console.log(orders)
+    console.log(orders);
     let line_items = [];
     for (let order in orders) {
         console.log(order);
@@ -51,7 +54,7 @@ router.post('/createCheckoutSession', async function(req, res, next) {
                 amount: item.price * 100,
                 currency: 'cad',
                 quantity: orders[order]
-            })
+            });
         } catch (e) {
             console.log(e);
             return res.send(e.toString()).status(500)
@@ -64,11 +67,21 @@ router.post('/createCheckoutSession', async function(req, res, next) {
             payment_method_types: ['card'],
             line_items: line_items,
             success_url: 'https://example.com/success?session_id={CHECKOUT_SESSION_ID}',
-            cancel_url: 'https://example.com/cancel',
+            cancel_url: 'https://example.com/cancel'
         });
 
-        console.log(req.user);
-        console.log(session);
+        // console.log(req.user);
+        // console.log(session);
+        for (let order in orders) {
+            let item = Item.findById(order);
+            item = await item;
+            if (item.type === 'ticket') {
+                let ticket = await TicketController.createTicket(req.user.sub, session.payment_intent, order,{});
+                await OrderController.createOrder(req.user.sub, order, session.payment_intent, {additional: {ticketID: ticket._id}});
+            } else {
+                await OrderController.createOrder(req.user.sub, order, session.payment_intent, {});
+            }
+        }
         res.send({"id": session.id});
     } catch (e) {
         res.status(500).send(e.toString())
@@ -80,17 +93,26 @@ router.post('/fulfillPurchase', async (req, res) => {
     let event;
 
     try {
-        event = JSON.parse(req.body);
+        event = req.body;
     } catch (err) {
         res.status(400).send(`Webhook Error: ${err.message}`);
     }
 
     // Handle the event
+    console.log("event", event);
+
     switch (event.type) {
         case 'payment_intent.succeeded':
             const paymentIntent = event.data.object;
             // Then define and call a method to handle the successful payment intent.
             // handlePaymentIntentSucceeded(paymentIntent);
+            let paymentIntentId = paymentIntent.id;
+            try {
+                await OrderController.markAsFulfilled(paymentIntentId);
+            } catch (e) {
+                console.log(e);
+                return res.status(500).end()
+            }
             break;
         case 'payment_method.attached':
             const paymentMethod = event.data.object;

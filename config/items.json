@@ -3,12 +3,14 @@
     "name": "Event Ticket",
     "description": "Ticket for entry into main reunion event. Lots of fun. Please spend money.",
     "image": "https://developer.apple.com/wwdc19/images/wwdc19-og-twitter.jpg",
-    "price": 40
+    "price": 40,
+    "type": "ticket"
   },
   {
     "name": "Massey Reunion T-Shirt",
     "description": "Very cool T-Shirt.",
     "image": "https://bananarepublic.gap.com/webcontent/0014/248/421/cn14248421.jpg",
-    "price": 26.99
+    "price": 26.99,
+    "type": "clothing"
   }
 ]

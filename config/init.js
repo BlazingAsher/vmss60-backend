@@ -13,16 +13,11 @@ for (const item in items) {
     let description = items[item]['description'];
     let image = items[item]['image'];
     let price = items[item]['price'];
-    addItem(name, description, image, price)
+    addItem(items[item])
 }
 
-function addItem(name, description, image, price) {
-    Item.create({
-        name: name,
-        description: description,
-        image: image,
-        price: price
-    }, (err, itemNew) => {
+function addItem(item) {
+    Item.create(item, (err, itemNew) => {
         if (err) throw err
         console.log(itemNew.name + ' added')
     })

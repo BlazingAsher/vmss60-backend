@@ -17,20 +17,4 @@ router.get('/', function (req, res, next) {
     });
 });
 
-router.put('/ticket', async (req, res, next) => {
-    const ticketMetadata = req.body.ticketMetadata;
-    const ticketId = req.body.ticketId;
-    try {
-        await TicketController.saveTicket(ticketId, ticketMetadata)
-    } catch (e) {
-        res.status(500).send({error: e.toString()})
-    }
-});
-
-router.post('/ticket', async (req, res, next) => {
-  const ticketMetadata = req.body.ticketMetadata;
-  const userId = req.body.userID;
-
-});
-
 module.exports = router;

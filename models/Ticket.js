@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 var schema = new mongoose.Schema({
     type: {
         type: String,
+        enum: ['event', 'other'],
         required: true
     },
     userID: {
@@ -15,24 +16,28 @@ var schema = new mongoose.Schema({
         type: String,
         required: true
     },
+    itemID: {
+        type: String,
+        required: true
+    },
     metadata: {
         name: {
             firstName: {
                 type: String,
-                required: true
+                // required: true
             },
             lastName: {
                 type: String,
-                required: true
+                // required: true
             }
         },
         school: {
             type: String,
-            required: true
+            // required: true
         },
         email: {
             type: String,
-            required: true
+            // required: true
         },
         gradYear: {
             type: Number,
@@ -40,14 +45,14 @@ var schema = new mongoose.Schema({
         address: {
             line1: {
                 type: String,
-                required: true
+                // required: true
             },
             line2: {
                 type: String,
             },
             city: {
                 type: String,
-                required: true
+                // required: true
             },
             state: {
                 type: String,
@@ -57,12 +62,12 @@ var schema = new mongoose.Schema({
             },
             country: {
                 type: String,
-                required: true
+                // required: true
             },
         },
         friendsOfMassey: {
             type: String,
-            required: true
+            // required: true
         },
     }
 

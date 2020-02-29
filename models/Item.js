@@ -20,7 +20,6 @@ var schema = new mongoose.Schema({
     additional: {
         type: mongoose.Mixed
     }
-
 });
 
 module.exports = mongoose.model('Item', schema);

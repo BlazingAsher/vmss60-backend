@@ -2,6 +2,7 @@ var express = require('express');
 var dotenv = require('dotenv');
 var router = express.Router();
 const Item = require('../models/Item');
+const User = require('../models/User');
 dotenv.config();
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
@@ -21,10 +22,18 @@ router.get('/allProducts', function(req, res, next) {
     });
 });
 
-router.get('/provisionUser', function(req, res, next) {
-
-    console.log(req.user.sub);
-
+router.post('/provisionUser', function(req, res, next) {
+    User.create({
+        bindID: req.body.bindID,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+    }, function(err){
+        if(err){
+            console.log(err);
+            return res.status(500).send({'error': 'Unable to provision the user. Please contact us at masseymustangs2020@gmail.com for assistance.'})
+        }
+        return res.send({'status': true})
+    });
 });
 
 router.post('/createCheckoutSession', async function(req, res, next) {
@@ -34,7 +43,7 @@ router.post('/createCheckoutSession', async function(req, res, next) {
     let line_items = [];
     for (let order in orders) {
         // console.log(order)
-        const item = await Item.findById(order);
+        const item = await Item.findByID(order);
         line_items.push({
             name: item.name,
             description: item.description,

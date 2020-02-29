@@ -13,11 +13,40 @@ var schema = new mongoose.Schema({
     },
     fulfilled: {
         type: Boolean,
+        required: true,
         default: false
     },
     redeemed: {
         type: Boolean,
+        required: true,
         default: false
+    },
+    configured: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
+    transID: {
+        type: String,
+        required: true
+    },
+    additional: {
+        type: mongoose.Mixed
+    }
+}, { toJSON: { virtuals: true } });
+
+schema.virtual('status').get(function() {
+    if(this.redeemed){
+        return 'Redeemed'
+    }
+    else if(this.fulfilled){
+        return 'Fulfilled'
+    }
+    else if(this.configured){
+        return 'Configured'
+    }
+    else {
+        return 'Not Configured'
     }
 });
 

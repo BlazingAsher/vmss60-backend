@@ -9,6 +9,7 @@ const mongoose = require('mongoose');
 dotenv.config();
 
 var indexRouter = require('./routes/index');
+var userRouter = require('./routes/user');
 
 var app = express();
 var cors = require('cors');
@@ -32,7 +33,18 @@ mongoose.connect(process.env.DB || 'mongodb://localhost:27017/vmss60-backend', {
     console.log(error)
 });
 
-app.use(jwtCheck);
+function unless(paths, middleware){
+    return function(req, res, next) {
+        console.log(req.path);
+        if (paths.indexOf(req.path) !== -1) {
+            return next();
+        } else {
+            return middleware(req, res, next);
+        }
+    };
+}
+
+app.use(unless(['/provisionUser'],jwtCheck));
 
 app.use(cors());
 app.use(logger('dev'));
@@ -42,5 +54,9 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
+app.use('/user/', userRouter);
 
 module.exports = app;
+
+//const OrderController = require('./controllers/OrderController');
+//OrderController.createOrder("auth0|5e432eca0bc1b30e93f2eacd", "5e559dba8512ca035c5d19e8", "test", {}, function() {});

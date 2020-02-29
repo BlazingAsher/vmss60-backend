@@ -37,32 +37,74 @@ router.post('/provisionUser', function(req, res, next) {
 });
 
 router.post('/createCheckoutSession', async function(req, res, next) {
-    // console.log(req.body);
     const orders = req.body.data.cart;
-    // console.log(orders)
+    console.log(orders)
     let line_items = [];
     for (let order in orders) {
-        // console.log(order)
-        const item = await Item.findByID(order);
-        line_items.push({
-            name: item.name,
-            description: item.description,
-            images: [item.image],
-            amount: item.price * 100,
-            currency: 'cad',
-            quantity: orders[order]
-        })
-    }
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: line_items,
-      success_url: 'https://example.com/success?session_id={CHECKOUT_SESSION_ID}',
-      cancel_url: 'https://example.com/cancel',
-    });
+        console.log(order);
+        try {
+            const item = await Item.findById(order);
+            line_items.push({
+                name: item.name,
+                description: item.description,
+                images: [item.image],
+                amount: item.price * 100,
+                currency: 'cad',
+                quantity: orders[order]
+            })
+        } catch (e) {
+            console.log(e);
+            return res.send(e.toString()).status(500)
+        }
 
-    console.log(req.user);
-    console.log(session);
-    res.send({"id": session.id});
+    }
+    console.log(line_items);
+    try {
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: line_items,
+            success_url: 'https://example.com/success?session_id={CHECKOUT_SESSION_ID}',
+            cancel_url: 'https://example.com/cancel',
+        });
+
+        console.log(req.user);
+        console.log(session);
+        res.send({"id": session.id});
+    } catch (e) {
+        res.status(500).send(e.toString())
+    }
+
 });
+
+router.post('/fulfillPurchase', async (req, res) => {
+    let event;
+
+    try {
+        event = JSON.parse(req.body);
+    } catch (err) {
+        res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    // Handle the event
+    switch (event.type) {
+        case 'payment_intent.succeeded':
+            const paymentIntent = event.data.object;
+            // Then define and call a method to handle the successful payment intent.
+            // handlePaymentIntentSucceeded(paymentIntent);
+            break;
+        case 'payment_method.attached':
+            const paymentMethod = event.data.object;
+            // Then define and call a method to handle the successful attachment of a PaymentMethod.
+            // handlePaymentMethodAttached(paymentMethod);
+            break;
+        // ... handle other event types
+        default:
+            // Unexpected event type
+            return res.status(400).end();
+    }
+
+    // Return a response to acknowledge receipt of the event
+    res.json({received: true});
+})
 
 module.exports = router;

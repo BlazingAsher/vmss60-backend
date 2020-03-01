@@ -8,7 +8,7 @@ const Ticket = require('../models/Ticket');
 router.post('/update', async (req, res, next) => {
     const ticketMetadata = req.body.ticketMetadata;
     const ticketId = req.body.ticketId;
-    console.log(ticketId)
+    console.log(ticketId);
     if (!ticketMetadata || !ticketId) {
         return res.sendStatus(400)
     }

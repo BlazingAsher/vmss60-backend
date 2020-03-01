@@ -4,10 +4,19 @@ const Order = require('../models/Order');
 
 class TicketController {
     static async saveTicket(ticketId, metadata) {
-        const count = await Ticket.countDocuments({_id: ticketId}).exec();
+        let count = Ticket.countDocuments({_id: ticketId}).exec();
+        let doc = Ticket.findOne({_id: ticketId});
+        count = await count;
+        doc = await doc;
+        let order = await Order.findOne({transID: doc.orderID});
         if (count > 0) {
             try {
-                await Ticket.updateOne({_id: ticketId}, {"$set": {"metadata": metadata}});
+                // await Ticket.updateOne({_id: ticketId}, {"$set": {"metadata": metadata}});
+                doc.metadata = metadata;
+                order.configured = true;
+                await doc.save();
+                await order.save();
+                // await Order.updateOne({_id: doc.orderID}, {"$set": {"configured": true}});
             } catch (e) {
                 return e
             }

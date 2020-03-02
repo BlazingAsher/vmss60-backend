@@ -66,8 +66,8 @@ router.post('/createCheckoutSession', async function(req, res, next) {
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             line_items: line_items,
-            success_url: 'https://vmss60.com/account?success=true&session_id={CHECKOUT_SESSION_ID}',
-            cancel_url: 'https://vmss60.com/cart',
+            success_url: 'https://staging.vmss60.com/account?success=true&session_id={CHECKOUT_SESSION_ID}',
+            cancel_url: 'https://staging.vmss60.com/cart',
             metadata: {orders: JSON.stringify(orders), user: req.user.sub.toString()}
         });
 

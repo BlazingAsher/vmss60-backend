@@ -45,7 +45,7 @@ function unless(paths, middleware){
     };
 }
 
-app.use(unless(['/provisionUser', '/fulfillPurchase'],jwtCheck));
+app.use(unless(['/provisionUser', '/fulfillPurchase', '/allProducts'],jwtCheck));
 
 app.use(cors());
 app.use(logger('dev'));

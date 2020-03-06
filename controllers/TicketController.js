@@ -6,9 +6,10 @@ class TicketController {
     static async saveTicket(ticketId, metadata) {
         let count = Ticket.countDocuments({_id: ticketId}).exec();
         let doc = Ticket.findOne({_id: ticketId});
+
         count = await count;
         doc = await doc;
-        let order = await Order.findOne({transID: doc.orderID});
+        let order = await Order.findOne({"additional.ticketID": ticketId});
         if (count > 0) {
             try {
                 // await Ticket.updateOne({_id: ticketId}, {"$set": {"metadata": metadata}});

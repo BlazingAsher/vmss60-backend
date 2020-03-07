@@ -94,7 +94,7 @@ router.post('/createCheckoutSession', async function(req, res, next) {
                 payment_method_types: ['card'],
                 line_items: line_items,
                 success_url: process.env.FRONTEND_URL + '/account?success=true&session_id={CHECKOUT_SESSION_ID}',
-                cancel_url: process.env.FRONTEND_URL + '/cart',
+                cancel_url: process.env.FRONTEND_URL + '/store/cart',
                 metadata: {orders: JSON.stringify(orders), user: req.user.sub.toString()}
             });
 

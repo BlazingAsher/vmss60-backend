@@ -1,5 +1,6 @@
 const Ticket = require('../models/Ticket');
 const Order = require('../models/Order');
+const mongoose = require("mongoose");
 
 
 class TicketController {
@@ -9,17 +10,18 @@ class TicketController {
 
         count = await count;
         doc = await doc;
-        let order = await Order.findOne({"additional.ticketID": ticketId});
-        if (count > 0) {
+        let order = await Order.findOne({"additional.ticketID": mongoose.Types.ObjectId(ticketId)});
+        if (count > 0 && order) {
             try {
                 // await Ticket.updateOne({_id: ticketId}, {"$set": {"metadata": metadata}});
                 doc.metadata = metadata;
+                console.log("doc", order);
                 order.configured = true;
                 await doc.save();
                 await order.save();
                 // await Order.updateOne({_id: doc.orderID}, {"$set": {"configured": true}});
             } catch (e) {
-                return e
+                return new Error(e)
             }
         } else {
             return new Promise((resolve, reject) => {

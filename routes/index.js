@@ -91,6 +91,7 @@ router.post('/createCheckoutSession', async function(req, res, next) {
         //console.log(line_items);
         try {
             const session = await stripe.checkout.sessions.create({
+                customer: user.customerID,
                 payment_method_types: ['card'],
                 line_items: line_items,
                 success_url: process.env.FRONTEND_URL + '/account?success=true&session_id={CHECKOUT_SESSION_ID}',

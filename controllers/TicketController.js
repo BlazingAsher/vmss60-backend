@@ -10,15 +10,17 @@ class TicketController {
 
         count = await count;
         doc = await doc;
-        let order = await Order.findOne({"additional.ticketID": mongoose.Types.ObjectId(ticketId)});
+        let order = await Order.findOne({"additional.ticketID": mongoose.Types.ObjectId(ticketId)}, '_id');
         if (count > 0 && order) {
             try {
                 // await Ticket.updateOne({_id: ticketId}, {"$set": {"metadata": metadata}});
                 doc.metadata = metadata;
                 console.log("doc", order);
-                order.configured = true;
+                // order.configured = true;
+                // order.configuredTime = Date.now();
+                await order.markAsConfigured();
                 await doc.save();
-                await order.save();
+                //await order.save();
                 // await Order.updateOne({_id: doc.orderID}, {"$set": {"configured": true}});
             } catch (e) {
                 return new Error(e)

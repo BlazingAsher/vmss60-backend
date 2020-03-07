@@ -45,9 +45,13 @@ class OrderController {
         }
     };
 
-    static async markAsFulfilled(transID) {
-        await Order.updateMany({"transID": transID}, {"$set":{"fulfilled": true}}).exec();
-    }
+    // static async markAsFulfilled(orderID, fulfilledTime = Date.now()) {
+    //     await Order.update({"_id": orderID}, {"$set":{"fulfilled": true, "fulfilledTime": fulfilledTime}}).exec();
+    // }
+
+    // static async markAsConfigured(orderID, configuredTime = Date.now()) {
+    //     await Order.update({"_id": orderID}, {"$set":{"configured": true, "configuredTime": configuredTime}}).exec();
+    // }
 }
 
 

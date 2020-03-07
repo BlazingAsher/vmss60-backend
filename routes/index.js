@@ -26,17 +26,35 @@ router.get('/allProducts', function(req, res, next) {
 });
 
 router.post('/provisionUser', function(req, res, next) {
-    User.create({
-        bindID: req.body.bindID,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-    }, function(err){
+    console.log(req.body)
+    if(!req.body.bindID || !req.body.firstName || !req.body.lastName || !req.body.email){
+        return res.status(500).send({'error': 'Please fill out all required fields!'})
+    }
+    stripe.customers.create({
+        email: req.body.email,
+        name: req.body.firstName + " " + req.body.lastName,
+        metadata: {
+            bindID: req.body.bindID
+        }
+    }, function(err, customer){
         if(err){
-            console.log(err);
             return res.status(500).send({'error': 'Unable to provision the user. Please contact us at masseymustangs2020@gmail.com for assistance.'})
         }
-        return res.send({'status': true})
+        User.create({
+            bindID: req.body.bindID,
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            customerID: customer.id
+        }, function(err2){
+            if(err2){
+                console.log(err2);
+                return res.status(500).send({'error': 'Unable to provision the user. Please contact us at masseymustangs2020@gmail.com for assistance.'})
+            }
+            return res.send({'status': true})
+        });
+
     });
+
 });
 
 router.post('/createCheckoutSession', async function(req, res, next) {

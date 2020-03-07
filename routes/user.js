@@ -8,8 +8,8 @@ const TicketController = require('../controllers/TicketController');
 router.get('/', function (req, res, next) {
     UserController.getUserByBindID(req.user.sub, function (err, user) {
         if (err || !user) {
-            console.log(err);
-            console.log(req.user);
+            //console.log(err);
+            //console.log(req.user);
             return res.status(500).send({"status": false, "message": "User not found"});
         }
 

@@ -3,6 +3,7 @@
     <envs>
       <env name="DEBUG" value="vmss60-backend:*" />
       <env name="PORT" value="3005" />
+      <env name="FRONTEND_URL" value="http://localhost:3000" />
     </envs>
     <EXTENSION ID="com.jetbrains.nodejs.run.NodeJSStartBrowserRunConfigurationExtension">
       <browser url="http://localhost:3000/" />

@@ -1,12 +1,16 @@
+var dotenv = require('dotenv');
+dotenv.config();
+
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
-var logger = require('morgan');
 var jwt = require('express-jwt');
 var jwks = require('jwks-rsa');
-var dotenv = require('dotenv');
+
 const mongoose = require('mongoose');
-dotenv.config();
+
+const logger = require('./log');
+const expressWinston = require('express-winston');
 
 var indexRouter = require('./routes/index');
 var userRouter = require('./routes/user');
@@ -48,7 +52,11 @@ function unless(paths, middleware){
 app.use(unless(['/provisionUser', '/fulfillPurchase', '/allProducts'],jwtCheck));
 
 app.use(cors());
-app.use(logger('dev'));
+//app.use(logger('dev'));
+app.use(expressWinston.errorLogger({
+    winstonInstance: logger
+    })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());

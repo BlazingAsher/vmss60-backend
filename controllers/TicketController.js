@@ -2,6 +2,8 @@ const Ticket = require('../models/Ticket');
 const Order = require('../models/Order');
 const mongoose = require("mongoose");
 
+const logger = require('winston');
+
 
 class TicketController {
     static async saveTicket(ticketId, metadata) {
@@ -23,6 +25,7 @@ class TicketController {
                 //await order.save();
                 // await Order.updateOne({_id: doc.orderID}, {"$set": {"configured": true}});
             } catch (e) {
+                logger.error(e);
                 return new Error(e)
             }
         } else {
@@ -43,6 +46,7 @@ class TicketController {
                     metadata: metadata
                 })
             } catch (e) {
+                logger.error(e);
                 return new Error(e)
             }
         } else {

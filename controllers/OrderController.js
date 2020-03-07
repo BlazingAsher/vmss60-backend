@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Order = require('../models/Order');
 const Ticket = require('../models/Ticket');
+const logger = require('winston');
 
 class OrderController {
     static async createOrder(bindID, itemID, transID, {fulfilled = null, redeemed = null, configured = null, additional = null}) {
@@ -40,6 +41,7 @@ class OrderController {
             })
         } catch (e) {
             return new Promise((resolve, reject) => {
+                logger.error(e);
                 reject(e)
             })
         }

@@ -7,6 +7,9 @@ const OrderController = require('../controllers/OrderController');
 const TicketController = require('../controllers/TicketController');
 const UserController = require('../controllers/UserController');
 const { v4: uuidv4 } = require('uuid');
+
+const logger = require('winston');
+
 dotenv.config();
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET);
@@ -27,7 +30,7 @@ router.get('/allProducts', function(req, res, next) {
 });
 
 router.post('/provisionUser', function(req, res, next) {
-    console.log(req.body)
+    //console.log(req.body)
     if(!req.body.bindID || !req.body.firstName || !req.body.lastName || !req.body.email){
         return res.status(500).send({'error': 'Please fill out all required fields!'})
     }
@@ -39,6 +42,7 @@ router.post('/provisionUser', function(req, res, next) {
         }
     }, function(err, customer){
         if(err){
+            logger.error(err);
             return res.status(500).send({'error': 'Unable to provision the user. Please contact us at masseymustangs2020@gmail.com for assistance.'})
         }
         User.create({
@@ -48,7 +52,7 @@ router.post('/provisionUser', function(req, res, next) {
             customerID: customer.id
         }, function(err2){
             if(err2){
-                console.log(err2);
+                logger.error(err2);
                 return res.status(500).send({'error': 'Unable to provision the user. Please contact us at masseymustangs2020@gmail.com for assistance.'})
             }
             return res.send({'status': true})
@@ -83,7 +87,7 @@ router.post('/createCheckoutSession', async function(req, res, next) {
                     quantity: orders[order]
                 });
             } catch (e) {
-                console.log(e);
+                logger.error(e);
                 return res.send(e.toString()).status(500)
             }
 
@@ -111,9 +115,10 @@ router.post('/createCheckoutSession', async function(req, res, next) {
             //         await OrderController.createOrder(req.user.sub, order, session.payment_intent, {});
             //     }
             // }
-            res.send({"id": session.id});
+            return res.send({"id": session.id});
         } catch (e) {
-            res.status(500).send(e.toString())
+            logger.error(e);
+            return res.status(500).send(e.toString())
         }
     });
 });
@@ -124,7 +129,8 @@ router.post('/fulfillPurchase', async (req, res) => {
     try {
         event = req.body;
     } catch (err) {
-        res.status(400).send(`Webhook Error: ${err.message}`);
+        logger.error(err);
+        return res.status(400).send(`Webhook Error: ${err.message}`);
     }
 
     // Handle the event
@@ -158,8 +164,8 @@ router.post('/fulfillPurchase', async (req, res) => {
                 for (let i = 0; i < orders[order]; i++) {
                     let item = await Item.findById(order);
                     if(!item){
-                        // Received an event from another instance
-                        //TODO: Probably should log this
+                        // Probably eceived an event from another instance
+                        logger.warn('No item with ID ' + order + ' found');
                         return res.json({received: true, warning: 'No item with ID ' + order + ' found'});
                     }
                     if (item.type === 'ticket') {
@@ -173,7 +179,7 @@ router.post('/fulfillPurchase', async (req, res) => {
             break;
         default:
             // Unexpected event type
-            return res.json({received: true});
+            return res.json({received: true, warn: 'Unknown event type.'});
     }
 
     // Return a response to acknowledge receipt of the event

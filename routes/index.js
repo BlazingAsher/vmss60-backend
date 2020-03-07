@@ -160,7 +160,7 @@ router.post('/fulfillPurchase', async (req, res) => {
                     if(!item){
                         // Received an event from another instance
                         //TODO: Probably should log this
-                        return res.json({received: true, warning: 'No item with ID ' + order + 'found'});
+                        return res.json({received: true, warning: 'No item with ID ' + order + ' found'});
                     }
                     if (item.type === 'ticket') {
                         let ticket = await TicketController.createTicket(checkout.metadata.user, checkout.id, order,{});

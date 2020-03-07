@@ -39,14 +39,14 @@ schema.virtual('status').get(function() {
     if(this.redeemed){
         return 'Redeemed'
     }
-    else if(this.configured){
-        return 'Configured'
-    }
     else if(this.fulfilled){
         return 'Fulfilled'
     }
+    else if(this.configured){
+        return 'Configured'
+    }
     else {
-        return 'Not Fulfilled'
+        return 'Not Configured'
     }
 });
 

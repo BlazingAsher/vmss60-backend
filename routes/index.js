@@ -131,9 +131,9 @@ router.post('/fulfillPurchase', async (req, res) => {
                     let item = await Item.findById(order);
                     if (item.type === 'ticket') {
                         let ticket = await TicketController.createTicket(checkout.metadata.user, checkout.id, order,{});
-                        await OrderController.createOrder(checkout.metadata.user, order, checkout.id, {fulfilled: true, additional: {ticketID: ticket._id}});
+                        await OrderController.createOrder(checkout.metadata.user, order, checkout.id, {additional: {ticketID: ticket._id}});
                     } else {
-                        await OrderController.createOrder(checkout.metadata.user, order, checkout.id, {fulfilled: true});
+                        await OrderController.createOrder(checkout.metadata.user, order, checkout.id, {});
                     }
                 }
             }

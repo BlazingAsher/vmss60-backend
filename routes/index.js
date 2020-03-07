@@ -157,6 +157,11 @@ router.post('/fulfillPurchase', async (req, res) => {
             for (let order in orders) {
                 for (let i = 0; i < orders[order]; i++) {
                     let item = await Item.findById(order);
+                    if(!item){
+                        // Received an event from another instance
+                        //TODO: Probably should log this
+                        return res.json({received: true, warning: 'No item with ID ' + order + 'found'});
+                    }
                     if (item.type === 'ticket') {
                         let ticket = await TicketController.createTicket(checkout.metadata.user, checkout.id, order,{});
                         await OrderController.createOrder(checkout.metadata.user, order, checkout.id, {additional: {ticketID: ticket._id}});
@@ -168,11 +173,11 @@ router.post('/fulfillPurchase', async (req, res) => {
             break;
         default:
             // Unexpected event type
-            return res.status(400).end();
+            return res.json({received: true});
     }
 
     // Return a response to acknowledge receipt of the event
-    res.json({received: true});
+    return res.json({received: true});
 });
 
 module.exports = router;

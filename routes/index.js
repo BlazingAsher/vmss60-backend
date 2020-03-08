@@ -124,14 +124,23 @@ router.post('/createCheckoutSession', async function(req, res, next) {
 });
 
 router.post('/fulfillPurchase', async (req, res) => {
-    let event;
+    const sig = req.headers['stripe-signature'];
 
+    let event;
+    let endpointSecret = process.env.ENDPOINT_SECRET;
     try {
-        event = req.body;
-    } catch (err) {
-        logger.error(err);
-        return res.status(400).send(`Webhook Error: ${err.message}`);
+        event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
     }
+    catch (err) {
+        logger.error(err);
+        res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+    // try {
+    //     event = req.body;
+    // } catch (err) {
+    //     logger.error(err);
+    //     return res.status(400).send(`Webhook Error: ${err.message}`);
+    // }
 
     // Handle the event
     // console.log("event", event);

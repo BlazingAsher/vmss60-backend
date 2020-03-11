@@ -8,7 +8,7 @@ var schema = new mongoose.Schema({
         required: true
     },
     itemID: {
-        type: String,
+        type: mongoose.Types.ObjectId,
         required: true
     },
     createTime: {
@@ -62,6 +62,22 @@ schema.virtual('status').get(function() {
         return 'Not Configured'
     }
 });
+
+schema.virtual('statusNum').get(function() {
+    let s = 0;
+    if(this.configured){
+        s++;
+    }
+    if(this.fulfilled){
+        s++;
+    }
+    if(this.redeemed) {
+        s++;
+    }
+
+    return s;
+});
+
 schema.methods.markAsConfigured = function(configuredTime = Date.now()){
   this.configured = true;
   this.configuredTime = configuredTime;

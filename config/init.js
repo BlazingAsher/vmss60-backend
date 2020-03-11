@@ -18,7 +18,7 @@ for (const item in items) {
 
 function addItem(item) {
     Item.create(item, (err, itemNew) => {
-        if (err) throw err
+        if (err) throw err;
         console.log(itemNew.name + ' added')
     })
 }

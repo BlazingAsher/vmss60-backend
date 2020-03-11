@@ -17,6 +17,16 @@ var schema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    priceUnit:{
+    	type: String,
+    	required: true,
+    	default: "each"
+    },
+    customerPaysFee: {
+    	type: Boolean,
+    	required: true,
+    	default: true
+    },
     type: {
         type: String,
         enum: ['ticket', 'clothing', 'generic'],
@@ -28,6 +38,15 @@ var schema = new mongoose.Schema({
     configuration: {
         type: mongoose.Mixed
     }
+}, { toJSON: { virtuals: true } });
+
+schema.virtual('customerPrice').get(function() {
+	if(this.customerPaysFee){
+		return +((this.price+0.3)/0.971).toFixed(2)
+	}
+	else {
+		return this.price;
+	}
 });
 
 module.exports = mongoose.model('Item', schema);

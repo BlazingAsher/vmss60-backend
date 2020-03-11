@@ -39,7 +39,7 @@ var schema = new mongoose.Schema({
 
 schema.virtual('customerPrice').get(function() {
 	if(this.customerPaysFee){
-		return Math.ceil((this.price+0.3)/0.971)
+		return ((this.price+0.3)/0.971).toFixed(2)
 	}
 	else {
 		return this.price;

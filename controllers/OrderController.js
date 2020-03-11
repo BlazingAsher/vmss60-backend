@@ -1,6 +1,8 @@
+import schema from 'async-validator';
+
 const User = require('../models/User');
 const Order = require('../models/Order');
-const Ticket = require('../models/Ticket');
+const Item = require('../models/Item');
 const logger = require('winston');
 
 class OrderController {
@@ -47,6 +49,75 @@ class OrderController {
         }
     };
 
+    static async updateOrder(orderID, orderMetadata, userID, bypassPerms = false){
+        try {
+            let order = await Order.findById(orderID);
+
+            // make sure there is an order, it has not been fulfilled, and the user has permissions
+            if(order && !order.fulfiled && (bypassPerms || order.userID === userID)){
+                let item = await Item.findById(order.itemID);
+
+                // make sure the corresponding item exists
+                if(item){
+                    // validate item configuration if it has one
+                    if(item.configuration) {
+                        let validator = new schema(item.configuration);
+                        try {
+                            await validator.validate(orderMetadata);
+                        }
+                        catch (e){
+                            return new Promise((resolve, reject) => {
+                                reject(new Error("Invalid schema! Please check all fields and try again."));
+                            })
+                        }
+
+                    }
+
+                    try {
+                        order.additional = orderMetadata;
+                        await order.save();
+
+                        return new Promise((resolve, reject) => {
+                            resolve("Updated order successfully.");
+                        })
+
+                    } catch(e){
+                        return new Promise((resolve, reject) => {
+                            reject(e);
+                        })
+                    }
+
+                }
+                else {
+                    return new Promise((resolve, reject) => {
+                        reject(new Error("Order has no item associated with it."))
+                    })
+                }
+
+            }
+            else {
+                if(order.fulfiled){
+                    return new Promise((resolve, reject) => {
+                        reject(new Error("Order has already been fulfilled!"));
+                    });
+                }
+                if(order.userID !== userID){
+                    return new Promise((resolve, reject) => {
+                        reject(new Error("You do not have permission to edit that order!"));
+                    });
+                }
+                return new Promise((resolve, reject) => {
+                    reject(new Error("Order not found."));
+                })
+            }
+
+        } catch(e) {
+            return new Promise((resolve, reject) => {
+                logger.error(e);
+                reject(e);
+            });
+        }
+    }
     // static async markAsFulfilled(orderID, fulfilledTime = Date.now()) {
     //     await Order.update({"_id": orderID}, {"$set":{"fulfilled": true, "fulfilledTime": fulfilledTime}}).exec();
     // }

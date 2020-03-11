@@ -24,6 +24,9 @@ var schema = new mongoose.Schema({
     },
     additional: {
         type: mongoose.Mixed
+    },
+    configuration: {
+        type: mongoose.Mixed
     }
 });
 

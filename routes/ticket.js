@@ -4,6 +4,8 @@ const UserController = require('../controllers/UserController');
 const TicketController = require('../controllers/TicketController');
 const Ticket = require('../models/Ticket');
 
+const logger = require('winston');
+
 // Update ticket
 router.post('/update', async (req, res, next) => {
     const ticketMetadata = req.body.ticketMetadata;
@@ -16,8 +18,8 @@ router.post('/update', async (req, res, next) => {
         await TicketController.saveTicket(ticketId, ticketMetadata);
         res.sendStatus(200);
     } catch (e) {
-        console.log(e)
-        res.status(500).send({error: e.toString()})
+        logger.error(e);
+        res.status(500).send({error: 'There was an error updating your tickets.'})
     }
 });
 
@@ -40,7 +42,8 @@ router.get('/', async (req, res, next) => {
         const tickets = await Ticket.find({userID: userID});
         res.send(tickets)
     } catch (e) {
-        res.sendStatus(500).send(e.toString())
+        logger.error(e);
+        res.sendStatus(500).send({error: 'There was an error retrieving your tickets.'})
     }
 
 });

@@ -15,6 +15,8 @@ const expressWinston = require('express-winston');
 var indexRouter = require('./routes/index');
 var userRouter = require('./routes/user');
 const ticketRouter = require('./routes/ticket');
+const orderRouter = require('./routes/order');
+const itemRouter = require('./routes/item');
 
 var app = express();
 var cors = require('cors');
@@ -65,6 +67,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/user/', userRouter);
 app.use('/ticket/', ticketRouter);
+app.use('/order/', orderRouter);
+app.use('/item/', itemRouter);
 
 module.exports = app;
 

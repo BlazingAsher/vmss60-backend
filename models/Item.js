@@ -17,6 +17,11 @@ var schema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    priceUnit:{
+    	type: String,
+    	required: true,
+    	default: "each"
+    },
     customerPaysFee: {
     	type: Boolean,
     	required: true,

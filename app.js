@@ -8,7 +8,7 @@ var jwt = require('express-jwt');
 var jwks = require('jwks-rsa');
 
 const mongoose = require('mongoose');
-
+const bodyParser = require('body-parser');
 const logger = require('./log');
 const expressWinston = require('express-winston');
 
@@ -59,7 +59,11 @@ app.use(expressWinston.errorLogger({
     winstonInstance: logger
     })
 );
-app.use(express.json());
+app.use(bodyParser.json({
+    verify: (req, res, buf) => {
+        req.rawBody = buf
+    }
+}));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));

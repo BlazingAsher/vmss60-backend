@@ -16,7 +16,7 @@ router.post('/update', async (req, res, next) => {
     }
 
     try {
-        await OrderController.updateOrder(orderID, orderMetadata);
+        await OrderController.updateOrder(orderID, orderMetadata, req.user.sub);
         res.sendStatus(200);
     } catch (e) {
         console.log(e);

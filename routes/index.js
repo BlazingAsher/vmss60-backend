@@ -82,7 +82,7 @@ router.post('/createCheckoutSession', async function(req, res, next) {
                     name: item.name,
                     description: item.description,
                     images: [item.image],
-                    amount: item.price * 100,
+                    amount: item.customerPrice * 100,
                     currency: 'cad',
                     quantity: orders[order]
                 });
